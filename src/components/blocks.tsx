@@ -404,37 +404,62 @@ export function DescriptionBlock({ listing, preview = false }: { listing: Listin
 }
 
 // ── Deal method ──────────────────────────────────────────────
-export function DealMethodBlock({ listing, config }: { listing: ListingData; config: ViewConfig }) {
+// compact=true  → single-line summary with chevron (V2)
+// compact=false → full multi-line rows with icons (all others)
+export function DealMethodBlock({ listing, config, compact = false }: { listing: ListingData; config: ViewConfig; compact?: boolean }) {
   const methods = listing.dealMethods.filter((m) => {
     if (!config.showBuy) return m.type === 'meetup'
     return config.deal === 'both' ? true : m.type === config.deal
   })
   if (!methods.length) return null
 
-  // Build inline summary: "Carousell official delivery, Meet up at [location]"
-  const parts = methods.map((m) =>
-    m.type === 'meetup' && m.location
-      ? { text: 'Meet up at ', location: m.location }
-      : { text: m.label, location: null }
-  )
-
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        <h3 className="text-large font-semibold text-content-primary">Deal method</h3>
-        <ChevronRight size={18} className="text-content-secondary" />
+  // ── Compact: single-line summary (V2) ──
+  if (compact) {
+    const parts = methods.map((m) =>
+      m.type === 'meetup' && m.location
+        ? { text: 'Meet up at ', location: m.location }
+        : { text: m.label, location: null }
+    )
+    return (
+      <div>
+        <div className="flex items-center justify-between">
+          <h3 className="text-large font-semibold text-content-primary">Deal method</h3>
+          <ChevronRight size={18} className="text-content-secondary" />
+        </div>
+        <p className="mt-1 text-middle text-content-secondary">
+          {parts.map((p, i) => (
+            <span key={i}>
+              {i > 0 && ', '}
+              {p.text}
+              {p.location && <span className="text-content-interactive">{p.location}</span>}
+            </span>
+          ))}
+        </p>
       </div>
-      <p className="mt-1 text-middle text-content-secondary">
-        {parts.map((p, i) => (
-          <span key={i}>
-            {i > 0 && ', '}
-            {p.text}
-            {p.location && (
-              <span className="text-content-interactive">{p.location}</span>
+    )
+  }
+
+  // ── Full: multi-line rows with icons ──
+  return (
+    <div className="space-y-3">
+      <h3 className="text-large font-semibold text-content-primary">Deal method</h3>
+      {methods.map((m, i) => (
+        <div key={i} className="flex items-start gap-3 text-small">
+          {m.type === 'delivery'
+            ? <Truck size={18} className="mt-0.5 shrink-0 text-content-secondary" />
+            : <MapPin size={18} className="mt-0.5 shrink-0 text-content-secondary" />}
+          <div className="flex-1">
+            <div className="font-semibold text-content-primary">{m.label}</div>
+            {(m.detail || m.price) && (
+              <div className="flex flex-nowrap items-center gap-2 text-content-secondary">
+                <span className="min-w-0 flex-1">{m.detail}</span>
+                {m.price && <span className="shrink-0">{m.price}</span>}
+              </div>
             )}
-          </span>
-        ))}
-      </p>
+            {m.location && <div className="text-content-interactive">{m.location}</div>}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

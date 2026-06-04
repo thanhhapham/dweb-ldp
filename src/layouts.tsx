@@ -118,12 +118,12 @@ function V2({ listing, config }: { listing: ListingData; config: ViewConfig }) {
           <Gallery listing={listing} thumbs="bottom" />
         </div>
 
-        {/* Right (6): title + price + deal method + CTAs + buyer protection */}
+        {/* Right (6): title + price + deal method (compact) + CTAs + buyer protection */}
         <div className="col-span-6 flex flex-col gap-5">
           <TitleBlock listing={listing} config={config} />
           <PriceBlock listing={listing} config={config} />
           <Divider />
-          <DealMethodBlock listing={listing} config={config} />
+          <DealMethodBlock listing={listing} config={config} compact />
           <div className="border-t border-stroke-boundary pt-4">
             <CtaButtons config={config} />
           </div>
