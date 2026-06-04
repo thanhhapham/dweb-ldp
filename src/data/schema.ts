@@ -55,8 +55,9 @@ export interface DealMethodOption {
 }
 
 export interface Promo {
-  title: string // "Buy 2 get 5% off"
-  sub?: string // "23 hours left"
+  title: string   // "Buy 2 get 5% off"
+  sub?: string    // "23 hours left" or "For new followers, capped at $5"
+  urgent?: boolean // true → red clock icon
 }
 
 export interface ListingData {
@@ -98,6 +99,7 @@ export interface ViewConfig {
   deal: DealConfig
   bnpl: boolean
   stickyCta: boolean
+  promo: boolean
 }
 
 export const LAYOUTS: { id: LayoutId; name: string; desc: string }[] = [

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   Search, ShoppingCart, Bell, ChevronRight, Info,
-  Truck, Wallet, ShieldCheck, MapPin, BadgeCheck, Percent, RotateCcw, Lock, Star,
+  Truck, Wallet, ShieldCheck, MapPin, BadgeCheck, Percent, RotateCcw, Lock, Star, Clock,
 } from 'lucide-react'
 import type { ListingData, ViewConfig, Attribute } from '../data/schema'
 import { TIER_LABEL } from '../data/schema'
@@ -249,7 +249,7 @@ export function TitleBlock({ listing, config, compact = false }: { listing: List
 
 // compact=true → baseline (H1 semibold)
 // compact=false → redesign variants (H3 regular)
-export function PriceBlock({ listing, config, compact = false }: { listing: ListingData; config: ViewConfig; compact?: boolean }) {
+export function PriceBlock({ listing, config, compact = false, hidePromo = false }: { listing: ListingData; config: ViewConfig; compact?: boolean; hidePromo?: boolean }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
@@ -263,24 +263,39 @@ export function PriceBlock({ listing, config, compact = false }: { listing: List
           <Wallet size={16} className="text-content-secondary" /> {listing.bnpl}
         </p>
       )}
-      {config.showBuy && (
+      {config.showBuy && config.deal !== 'meetup' && (
         <p className="flex items-center gap-2 text-small text-content-secondary">
           <Truck size={16} /> Free delivery, within 2-3 working days
         </p>
       )}
-      {listing.promos && listing.promos.length > 0 && (
-        <div className="flex gap-2 pt-1">
-          {listing.promos.map((p, i) => (
-            <div key={i} className="flex flex-1 items-center gap-2 rounded-lg border border-stroke-boundary px-3 py-2">
-              <Percent size={18} className="text-skyteal-80" />
-              <div className="min-w-0">
-                <div className="truncate text-small font-semibold text-content-primary">{p.title}</div>
-                {p.sub && <div className="truncate text-tiny text-content-secondary">{p.sub}</div>}
-              </div>
+      {!hidePromo && <PromoCards config={config} />}
+    </div>
+  )
+}
+
+export function PromoCards({ config }: { config: ViewConfig }) {
+  if (!config.promo) return null
+  return (
+    <div className="flex w-full items-center gap-2 overflow-hidden">
+      {[
+        { title: 'Buy 2 get 5% off', sub: '23 hours left', urgent: true },
+        { title: 'Buy 2 get 5% off', sub: 'For new followers, capped at $5', urgent: false },
+      ].map((p, i) => (
+        <div key={i} className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-stroke-boundary bg-white px-3 py-3">
+          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#00C671]/10">
+            <Percent size={14} className="text-[#00C671]" />
+          </div>
+          <div className="h-7 w-px shrink-0 bg-stroke-boundary" />
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="text-small font-semibold text-content-primary">{p.title}</div>
+            <div className={cn('flex items-center gap-1 text-tiny', p.urgent ? 'text-red-700' : 'text-content-secondary')}>
+              {p.urgent && <Clock size={10} className="shrink-0" />}
+              <span className="truncate">{p.sub}</span>
             </div>
-          ))}
+          </div>
         </div>
-      )}
+      ))}
+      <ChevronRight size={20} className="shrink-0 text-content-secondary" />
     </div>
   )
 }
@@ -393,32 +408,40 @@ export function DealMethodBlock({ listing, config }: { listing: ListingData; con
     return config.deal === 'both' ? true : m.type === config.deal
   })
   if (!methods.length) return null
+
+  // Build inline summary: "Carousell official delivery, Meet up at [location]"
+  const parts = methods.map((m) =>
+    m.type === 'meetup' && m.location
+      ? { text: 'Meet up at ', location: m.location }
+      : { text: m.label, location: null }
+  )
+
   return (
-    <div className="space-y-3">
-      <h3 className="text-large font-semibold text-content-primary">Deal method</h3>
-      {methods.map((m, i) => (
-        <div key={i} className="flex items-start gap-3 text-small">
-          {m.type === 'delivery' ? <Truck size={18} className="mt-0.5 text-content-secondary" /> : <MapPin size={18} className="mt-0.5 text-content-secondary" />}
-          <div className="flex-1">
-            <div className="font-semibold text-content-primary">{m.label}</div>
-            {(m.detail || m.price) && (
-              <div className="text-content-secondary">
-                {[m.detail, m.price].filter(Boolean).join(' · ')}
-              </div>
+    <div>
+      <div className="flex items-center justify-between">
+        <h3 className="text-large font-semibold text-content-primary">Deal method</h3>
+        <ChevronRight size={18} className="text-content-secondary" />
+      </div>
+      <p className="mt-1 text-middle text-content-secondary">
+        {parts.map((p, i) => (
+          <span key={i}>
+            {i > 0 && ', '}
+            {p.text}
+            {p.location && (
+              <span className="text-content-interactive">{p.location}</span>
             )}
-            {m.location && <div className="text-content-interactive">{m.location}</div>}
-          </div>
-        </div>
-      ))}
+          </span>
+        ))}
+      </p>
     </div>
   )
 }
 
 // ── Transaction panel (used in rails for V2 / V3) ────────────
-export function TransactionPanel({ listing, config }: { listing: ListingData; config: ViewConfig }) {
+export function TransactionPanel({ listing, config, hidePromo = false }: { listing: ListingData; config: ViewConfig; hidePromo?: boolean }) {
   return (
     <div className="space-y-4 rounded-xl border border-stroke-boundary p-4">
-      <PriceBlock listing={listing} config={config} />
+      <PriceBlock listing={listing} config={config} hidePromo={hidePromo} />
       <CtaButtons config={config} compact />
       <Divider />
       <DealMethodBlock listing={listing} config={config} />

@@ -112,6 +112,7 @@ export function ControlPanel({
       <Group label="Variations">
         <Toggle label="Buy button" on={config.showBuy} onChange={(v) => set({ showBuy: v })} />
         <Toggle label="BNPL (PayLater/Atome)" on={config.bnpl} onChange={(v) => set({ bnpl: v })} />
+        <Toggle label="Promo" on={config.promo} onChange={(v) => set({ promo: v })} />
       </Group>
 
       <button

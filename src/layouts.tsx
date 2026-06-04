@@ -2,7 +2,7 @@ import type { ListingData, ViewConfig } from './data/schema'
 import {
   TopNav, Breadcrumb, AdBanner, Gallery, TitleBlock, PriceBlock, CtaButtons,
   AttributesBlock, DescriptionBlock, DealMethodBlock, TransactionPanel, SellerBlock,
-  WhatOthersSearch, SimilarListings, AdSidebar, StickyCtaBar, Footer, PaymentNotice, BuyerProtection,
+  WhatOthersSearch, SimilarListings, AdSidebar, StickyCtaBar, Footer, PaymentNotice, BuyerProtection, PromoCards,
 } from './components/blocks'
 import { Divider } from './components/ui'
 
@@ -118,17 +118,16 @@ function V2({ listing, config }: { listing: ListingData; config: ViewConfig }) {
           <Gallery listing={listing} thumbs="bottom" />
         </div>
 
-        {/* Right (6): title + price + deal method + buyer protection + sticky CTAs */}
-        <div className="col-span-6 space-y-5">
+        {/* Right (6): title + price + deal method + CTAs + buyer protection */}
+        <div className="col-span-6 flex flex-col gap-5">
           <TitleBlock listing={listing} config={config} />
           <PriceBlock listing={listing} config={config} />
           <Divider />
           <DealMethodBlock listing={listing} config={config} />
-          <Divider />
-          {config.showBuy && <BuyerProtection />}
-          <div className="sticky bottom-0 border-t border-stroke-boundary bg-white py-4">
+          <div className="border-t border-stroke-boundary pt-4">
             <CtaButtons config={config} />
           </div>
+          {config.showBuy && <BuyerProtection />}
         </div>
       </div>
 
@@ -178,18 +177,19 @@ function V3({ listing, config }: { listing: ListingData; config: ViewConfig }) {
           <Gallery listing={listing} thumbs="bottom" />
         </div>
 
-        {/* Col 6–9: title + attributes + description */}
+        {/* Col 6–9: title + promo + attributes + description */}
         <div className="col-span-4 space-y-5">
           <TitleBlock listing={listing} config={config} />
+          <PromoCards config={config} />
           <Divider />
           <AttributesBlock listing={listing} preview />
           <Divider />
           <DescriptionBlock listing={listing} preview />
         </div>
 
-        {/* Col 10–12: sticky transaction card + buyer protection as separate grey card */}
+        {/* Col 10–12: sticky transaction card (promos suppressed — shown in middle col) */}
         <div className="col-span-3 sticky top-28 self-start space-y-4">
-          <TransactionPanel listing={listing} config={config} />
+          <TransactionPanel listing={listing} config={config} hidePromo />
           {config.showBuy && <BuyerProtection />}
         </div>
 

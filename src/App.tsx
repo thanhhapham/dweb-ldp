@@ -12,6 +12,7 @@ const DEFAULT: ViewConfig = {
   deal: 'both',
   bnpl: true,
   stickyCta: false,
+  promo: true,
 }
 
 function readUrl(): { config: ViewConfig; panel: boolean } {
@@ -24,6 +25,7 @@ function readUrl(): { config: ViewConfig; panel: boolean } {
       deal: (p.get('deal') as DealConfig) ?? DEFAULT.deal,
       bnpl: p.get('bnpl') !== '0',
       stickyCta: p.get('sticky') === '1',
+      promo: p.get('promo') !== '0',
     },
     panel: p.get('panel') !== '0',
   }
@@ -36,6 +38,7 @@ function writeUrl(c: ViewConfig, panel: boolean) {
   if (!c.showBuy) p.set('buy', '0')
   if (c.deal !== DEFAULT.deal) p.set('deal', c.deal)
   if (!c.bnpl) p.set('bnpl', '0')
+  if (!c.promo) p.set('promo', '0')
   if (c.stickyCta) p.set('sticky', '1')
   if (!panel) p.set('panel', '0')
   window.history.replaceState(null, '', `?${p.toString()}`)

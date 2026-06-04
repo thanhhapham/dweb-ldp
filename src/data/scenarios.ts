@@ -124,6 +124,10 @@ const gradedCasual2: ListingData = {
   price: 'S$1,330',
   originalPrice: 'S$1,500',
   goodDeal: true,
+  promos: [
+    { title: "Buy 2 get 5% off", sub: "23 hours left", urgent: true },
+    { title: "Buy 2 get 5% off", sub: "For new followers, capped at $5" },
+  ],
   grading: { company: 'PSA', grade: '10' },
   bnpl: 'From S$110.83/mo with PayLater or Atome',
   completeness: 'partial',
@@ -172,6 +176,10 @@ const gradedPro: ListingData = {
   conditionNote: 'Graded PSA 10 GEM MT. Full Art. A video recording of unboxing is required for verification.',
   price: 'S$131',
   goodDeal: true,
+  promos: [
+    { title: 'Buy 2 get 5% off', sub: '23 hours left', urgent: true },
+    { title: 'Buy 2 get 5% off', sub: 'For new followers, capped at $5' },
+  ],
   grading: { company: 'PSA', grade: '10' },
   bnpl: 'From S$10.92/mo with PayLater or Atome',
   completeness: 'full',
@@ -278,6 +286,10 @@ const boosterBoxPro: ListingData = {
   price: 'S$215',
   originalPrice: 'S$259',
   goodDeal: true,
+  promos: [
+    { title: 'Buy 2 get 5% off', sub: '23 hours left', urgent: true },
+    { title: 'Buy 2 get 5% off', sub: 'For new followers, capped at $5' },
+  ],
   bnpl: 'From S$17.92/mo with PayLater or Atome',
   completeness: 'partial',
   images: [
