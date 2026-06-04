@@ -1,7 +1,7 @@
 import type { ListingData, ViewConfig } from './data/schema'
 import {
   TopNav, Breadcrumb, AdBanner, Gallery, TitleBlock, PriceBlock, CtaButtons,
-  AttributesBlock, DescriptionBlock, DealMethodBlock, TransactionPanel, SellerBlock,
+  AttributesBlock, DescriptionBlock, DealMethodBlock, TransactionPanel, SellerBlock, SellerContactCard,
   WhatOthersSearch, SimilarListings, AdSidebar, StickyCtaBar, Footer, PaymentNotice, BuyerProtection, PromoCards,
 } from './components/blocks'
 import { Divider } from './components/ui'
@@ -145,8 +145,9 @@ function V2({ listing, config }: { listing: ListingData; config: ViewConfig }) {
           <PaymentNotice />
         </div>
 
-        {/* Right (3): side ad */}
-        <div className="col-span-3 pt-6">
+        {/* Right (3): seller contact card + side ad */}
+        <div className="col-span-3 space-y-4 pt-6">
+          <SellerContactCard listing={listing} config={config} />
           <AdSidebar />
         </div>
       </div>
@@ -189,7 +190,7 @@ function V3({ listing, config }: { listing: ListingData; config: ViewConfig }) {
 
         {/* Col 10–12: sticky transaction card (promos suppressed — shown in middle col) */}
         <div className="col-span-3 sticky top-28 self-start space-y-4">
-          <TransactionPanel listing={listing} config={config} hidePromo />
+          <TransactionPanel listing={listing} config={config} hidePromo calloutPrice />
           {config.showBuy && <BuyerProtection />}
         </div>
 

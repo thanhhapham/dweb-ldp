@@ -249,11 +249,13 @@ export function TitleBlock({ listing, config, compact = false }: { listing: List
 
 // compact=true → baseline (H1 semibold)
 // compact=false → redesign variants (H3 regular)
-export function PriceBlock({ listing, config, compact = false, hidePromo = false }: { listing: ListingData; config: ViewConfig; compact?: boolean; hidePromo?: boolean }) {
+// compact=true → H1 semibold (baseline); callout=true → Small semibold (V3 panel); default → H3 regular
+export function PriceBlock({ listing, config, compact = false, callout = false, hidePromo = false }: { listing: ListingData; config: ViewConfig; compact?: boolean; callout?: boolean; hidePromo?: boolean }) {
+  const priceClass = compact ? 'text-h1 font-semibold' : callout ? 'text-h3 font-semibold' : 'text-h3'
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <span className={cn(compact ? 'text-h1 font-semibold' : 'text-h3', 'text-content-primary')}>{listing.price}</span>
+        <span className={cn(priceClass, 'text-content-primary')}>{listing.price}</span>
         {listing.originalPrice && (
           <span className="text-large text-content-subdued line-through">{listing.originalPrice}</span>
         )}
@@ -438,13 +440,44 @@ export function DealMethodBlock({ listing, config }: { listing: ListingData; con
 }
 
 // ── Transaction panel (used in rails for V2 / V3) ────────────
-export function TransactionPanel({ listing, config, hidePromo = false }: { listing: ListingData; config: ViewConfig; hidePromo?: boolean }) {
+export function TransactionPanel({ listing, config, hidePromo = false, calloutPrice = false }: { listing: ListingData; config: ViewConfig; hidePromo?: boolean; calloutPrice?: boolean }) {
   return (
     <div className="space-y-4 rounded-xl border border-stroke-boundary p-4">
-      <PriceBlock listing={listing} config={config} hidePromo={hidePromo} />
+      <PriceBlock listing={listing} config={config} hidePromo={hidePromo} callout={calloutPrice} />
       <CtaButtons config={config} compact />
       <Divider />
       <DealMethodBlock listing={listing} config={config} />
+    </div>
+  )
+}
+
+// ── Seller contact card (compact — used in V2 right rail) ────
+export function SellerContactCard({ listing, config }: { listing: ListingData; config: ViewConfig }) {
+  const s = listing.seller
+  return (
+    <div className="rounded-xl border border-stroke-boundary bg-white p-4 shadow-sm space-y-4">
+      {/* Seller info */}
+      <div className="flex items-center gap-3">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-skyteal-80/10 text-large font-semibold text-skyteal-80">
+          {s.name.slice(0, 1).toUpperCase()}
+        </div>
+        <div className="min-w-0">
+          <div className="font-semibold text-middle text-content-primary">{s.name}</div>
+          <div className="flex items-center gap-1 text-small text-content-secondary">
+            <span>@{s.handle}</span>
+            {s.verified && <BadgeCheck size={14} className="text-blue-500 shrink-0" />}
+          </div>
+          {s.rating != null && (
+            <div className="flex items-center gap-1.5 text-small">
+              <span className="text-content-primary">{s.rating.toFixed(1)}</span>
+              <Stars rating={s.rating} />
+              <span className="text-content-secondary">({s.reviewCount} reviews)</span>
+            </div>
+          )}
+        </div>
+      </div>
+      {/* CTAs */}
+      <CtaButtons config={config} compact />
     </div>
   )
 }
@@ -453,7 +486,7 @@ export function TransactionPanel({ listing, config, hidePromo = false }: { listi
 export function SellerBlock({ listing }: { listing: ListingData }) {
   const s = listing.seller
   return (
-    <Section title="Meet the seller">
+    <Section title="About this seller">
       <div className="grid gap-6 md:grid-cols-[240px_1fr]">
         <div>
           <div className="flex items-center gap-3">
